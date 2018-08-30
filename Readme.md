@@ -1,7 +1,7 @@
 # Личный проект «Кэндишоп» [![Build status][travis-image]][travis-url]
 
 * Студент: [Анна Тёшкина](https://up.htmlacademy.ru/javascript/15/user/305561).
-* Наставник: `Неизвестно`.
+* Наставник: [Денис Байдаров] (https://htmlacademy.ru/profile/4er).
 
 ---
 
