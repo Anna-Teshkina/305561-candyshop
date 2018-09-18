@@ -18,6 +18,14 @@ var getRandomFromInterval = function (min, max) {
   return randomFromInterval;
 };
 
+var getCardsArray = function (n, array) {
+  for (var i = 0; i < n; i++) {
+    var cardItem = getCard();
+    array.push(cardItem);
+  }
+  return array;
+};
+
 var getContents = function () {
   var componentsArray = [];
   var components = '';
@@ -44,12 +52,10 @@ var getContents = function () {
   return components;
 };
 
-getContents();
-
 var getCard = function () {
   var cardName = getRandomElement(CARD_NAMES);
   var cardUrl = 'img/cards/' + getRandomElement(PIC_NAMES);
-  var bulleanRandom = Math.round(Math.random());
+  var booleanRandom = Math.round(Math.random());
 
   var card = {
     name: cardName,
@@ -62,7 +68,7 @@ var getCard = function () {
       number: getRandomFromInterval(10, 900),
     },
     nutritionFacts: {
-      sugar: bulleanRandom,
+      sugar: booleanRandom,
       energy: getRandomFromInterval(70, 500),
       contents: getContents()
     }
@@ -71,10 +77,7 @@ var getCard = function () {
   return card;
 };
 
-for (var i = 0; i < NUMBER_CARDS; i++) {
-  var cardItem = getCard();
-  cards.push(cardItem);
-}
+getCardsArray(NUMBER_CARDS, cards);
 
 document.querySelector('.catalog__cards').classList.remove('catalog__cards--load');
 document.querySelector('.catalog__load').classList.add('visually-hidden');
@@ -106,20 +109,22 @@ var renderCard = function (card) {
   }
 
   var stars = '';
-  if (card.rating.value === 1) {
-    stars = 'stars__rating--one';
-  }
-  if (card.rating.value === 2) {
-    stars = 'stars__rating--two';
-  }
-  if (card.rating.value === 3) {
-    stars = 'stars__rating--three';
-  }
-  if (card.rating.value === 4) {
-    stars = 'stars__rating--four';
-  }
-  if (card.rating.value === 5) {
-    stars = 'stars__rating--five';
+  switch (card.rating.value) {
+    case 1:
+      stars = 'stars__rating--one';
+      break;
+    case 2:
+      stars = 'stars__rating--two';
+      break;
+    case 3:
+      stars = 'stars__rating--three';
+      break;
+    case 4:
+      stars = 'stars__rating--four';
+      break;
+    case 5:
+      stars = 'stars__rating--five';
+      break;
   }
 
   var cardRating = cardElement.querySelector('.stars__rating');
@@ -141,23 +146,22 @@ var renderCard = function (card) {
   return cardElement;
 };
 
-var fragment = document.createDocumentFragment();
+var renderFragment = function (n, method, array) {
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < n; i++) {
+    fragment.appendChild(method(array[i]));
+  }
+  return fragment;
+};
 
-for (i = 0; i < cards.length; i++) {
-  fragment.appendChild(renderCard(cards[i]));
-}
-
-cardList.appendChild(fragment);
+cardList.appendChild(renderFragment(cards.length, renderCard, cards));
 
 // Шаблон для товара, добавленного в корзину
-var orderCount = 3;
+var ORDER_COUNT = 3; // количество товаров, добавленных в корзину
 
 var orders = [];
 
-for (i = 0; i < orderCount; i++) {
-  var orderItem = getCard();
-  orders.push(orderItem);
-}
+getCardsArray(ORDER_COUNT, orders);
 
 var orderList = document.querySelector('.goods__cards');
 var orderElementTemplate = document.querySelector('#card-order').content.querySelector('.goods_card');
@@ -183,17 +187,10 @@ var renderOrder = function (card) {
   orderElement.querySelector('.card-order__count').name = inputName;
   orderElement.querySelector('.card-order__count').id = '#' + inputName;
 
-
   return orderElement;
 };
 
-var orderFragment = document.createDocumentFragment();
-
-for (i = 0; i < orders.length; i++) {
-  orderFragment.appendChild(renderOrder(orders[i]));
-}
-
-orderList.appendChild(orderFragment);
+orderList.appendChild(renderFragment(orders.length, renderOrder, orders));
 
 document.querySelector('.goods__cards').classList.remove('goods__cards--empty');
 document.querySelector('.goods__card-empty').classList.add('visually-hidden');
