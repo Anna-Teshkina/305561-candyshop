@@ -25,8 +25,8 @@ var getCardsArray = function (n) {
   return array;
 };
 
-var getShuffleArray = function (array) {
-  array = [];
+var getShuffleArray = function (arrayName) {
+  var array = arrayName;
   var j;
   var temp;
   for (var i = array.length - 1; i > 0; i--) {
@@ -39,14 +39,9 @@ var getShuffleArray = function (array) {
 };
 
 var getContents = function () {
-  var componentsArray = [];
   var componentsNumber = getRandomFromInterval(1, CONTENT_NAMES.length);
-
-  getShuffleArray(CONTENT_NAMES);
-
-  for (var i = 0; i < componentsNumber; i++) {
-    componentsArray[i] = CONTENT_NAMES[i];
-  }
+  CONTENT_NAMES = getShuffleArray(CONTENT_NAMES);
+  var componentsArray = CONTENT_NAMES.slice(0, componentsNumber - 1);
   var components = componentsArray.join(', ');
   return components;
 };
