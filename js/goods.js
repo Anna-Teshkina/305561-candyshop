@@ -20,8 +20,7 @@ var getRandomFromInterval = function (min, max) {
 var getCardsArray = function (n) {
   var array = [];
   for (var i = 0; i < n; i++) {
-    var cardItem = getCard();
-    cardItem.id = i;
+    var cardItem = getCard(i);
     array.push(cardItem);
   }
   return array;
@@ -48,13 +47,14 @@ var getContents = function () {
   return components;
 };
 
-var getCard = function () {
+var getCard = function (index) {
   var card = {
     name: getRandomElement(CARD_NAMES),
     picture: 'img/cards/' + getRandomElement(PIC_NAMES),
     amount: getRandomFromInterval(0, 20),
     price: getRandomFromInterval(100, 1500),
     weight: getRandomFromInterval(30, 300),
+    id: index,
     rating: {
       value: getRandomFromInterval(1, 5),
       number: getRandomFromInterval(10, 900),
@@ -148,23 +148,23 @@ var renderCard = function (card) {
   cardElement.addEventListener('click', function (evt) {
     // ДОБАВИТЬ В ИЗБРАННОЕ
     if (evt.target.classList.contains('card__btn-favorite')) {
-      var btnFavorite = this.querySelector('.card__btn-favorite');
+      var btnFavorite = evt.currentTarget.querySelector('.card__btn-favorite');
       btnFavorite.classList.toggle('card__btn-favorite--selected');
     }
 
     // СМОТРЕТЬ СОСТАВ
     if (evt.target.classList.contains('card__btn-composition')) {
-      var cardComposition = this.querySelector('.card__composition');
+      var cardComposition = evt.currentTarget.querySelector('.card__composition');
       cardComposition.classList.toggle('card__composition--hidden');
     }
 
     // ДОБАВИТЬ В КОРЗИНУ
     if (evt.target.classList.contains('card__btn')) {
-      var btnId = this.dataset.id;
+      // var btnId = evt.currentTarget.dataset.id;
 
-      if (cards[btnId].amount > 0) {
+      /* if (cards[btnId].amount > 0) {
         cards[btnId].amount -= 1;
-        setQuantityClass(this, cards[btnId].amount); // меняем класс текущей карточки каталога
+        setQuantityClass(evt.currentTarget, cards[btnId].amount); // меняем класс текущей карточки каталога
         var findCard = Object.assign({}, cards[btnId]); // копируем карточку в findCard
         var currentOrder = getOrder(findCard, btnId);
 
@@ -176,12 +176,9 @@ var renderCard = function (card) {
           var q = '[data-id="' + btnId + '"]'; // вспомогательная переменная для поиска покупки с заданным data-id
           var flag = 0;
 
-          for (var j = 0; j < orders.length; j++) {
-            if (currentOrder.name === orders[j].name) {
-              flag = 1;
-              var index = j;
-            }
-          }
+          var currentResult = findOrderInCart(currentOrder, orders);
+          flag = currentResult.flag;
+          var index = currentResult.index;
 
           if (flag > 0) {
             var findOrder = orderList.querySelector('.card-order' + q);
@@ -196,9 +193,10 @@ var renderCard = function (card) {
 
         hideEmptyResults();
         writeTotalResult(orders);
-      }
+      }*/
 
-      /* я не понимаю как снять обработчик нажатия на кнопку добавить если количество ноль */
+      setGoodsInCart(evt.currentTarget, 'add');
+
     }
   });
 
@@ -249,83 +247,93 @@ var renderOrder = function (card) {
   // orderElement.querySelector('.card-order__count').id = card.id;
 
   orderElement.addEventListener('click', function (evt) {
-    var btnId = this.dataset.id;
+    /* var btnId = evt.currentTarget.dataset.id;
     var q = '[data-id="' + btnId + '"]';
     var findCard = cardList.querySelector('.card' + q);
-    var indexOrder;
+    var index;*/
 
     // УВЕЛИЧИТЬ КОЛИЧЕСТВО------------------------------------------
     if (evt.target.classList.contains('card-order__btn--increase')) {
-      if (cards[btnId].amount > 0) {
+      /* if (cards[btnId].amount > 0) {
         cards[btnId].amount -= 1; // уменьшаем на 1 кол-во товара в карточке каталога
         setQuantityClass(findCard, cards[btnId].amount); // меняем класс текущей карточки каталога
 
-        for (var k = 0; k < orders.length; k++) {
-          if (this.querySelector('.card-order__title').textContent === orders[k].name) {
+        // определим порядковый номер (индекс) объекта order (который соответствует нашей дом-ноде) в массиве orders
+        /*for (var k = 0; k < orders.length; k++) {
+          if (evt.currentTarget.querySelector('.card-order__title').textContent === orders[k].name) {
             var index = k;
           }
-        }
+        }*//*
+
+        index = findOrderIndex(evt.currentTarget, orders);
 
         orders[index].amount += 1;
-        this.querySelector('.card-order__count').value = orders[index].amount;
+        evt.currentTarget.querySelector('.card-order__count').value = orders[index].amount;
       }
-      writeTotalResult(orders);
+      writeTotalResult(orders);*/
+
+      setGoodsInCart(evt.currentTarget, 'increase');
     }
 
     // УМЕНЬШИТЬ КОЛИЧЕСТВО------------------------------------------
     if (evt.target.classList.contains('card-order__btn--decrease')) {
-      // определяем у нажатой карточки заказа атрибут data-id
-      // такой же data-id у карточки товара
-
-      // определим порядковый номер (индекс) объека order (который соответствует нашей дом-ноде) в массиве orders
-      for (k = 0; k < orders.length; k++) {
-        if (this.querySelector('.card-order__title').textContent === orders[k].name) {
-          indexOrder = k;
-        }
-      }
-      cards[btnId].amount += 1;
-
+      /* cards[btnId].amount += 1;
       // меняем класс текущей карточки каталога
       setQuantityClass(findCard, cards[btnId].amount);
 
-      if (orders[indexOrder].amount > 1) {
-        orders[indexOrder].amount -= 1;
-        this.querySelector('.card-order__count').value = orders[indexOrder].amount;
+      // определим порядковый номер (индекс) объекта order (который соответствует нашей дом-ноде) в массиве orders
+      /*for (k = 0; k < orders.length; k++) {
+        if (evt.currentTarget.querySelector('.card-order__title').textContent === orders[k].name) {
+          indexOrder = k;
+        }
+      }*//*
+
+      index = findOrderIndex(evt.currentTarget, orders);
+
+      if (orders[index].amount > 1) {
+        orders[index].amount -= 1;
+        evt.currentTarget.querySelector('.card-order__count').value = orders[index].amount;
         writeTotalResult(orders);
       } else {
         if (orders.length === 1) {
           orders = [];
-          orderList.removeChild(this);
+          orderList.removeChild(evt.currentTarget);
           showEmptyResults();
         } else {
-          orders.splice(indexOrder, 1);
-          orderList.removeChild(this);
+          orders.splice(index, 1);
+          orderList.removeChild(evt.currentTarget);
           writeTotalResult(orders);
         }
-      }
+      }*/
+
+      setGoodsInCart(evt.currentTarget, 'decrease');
     }
 
-    // УДАЛИТЬ КАРТОЧКУ ТОВАРА ---------------------------------
+    // УДАЛИТЬ КАРТОЧКУ ТОВАРА ------------------------------
     if (evt.target.classList.contains('card-order__close')) {
-      for (k = 0; k < orders.length; k++) {
-        if (this.querySelector('.card-order__title').textContent === orders[k].name) {
+      /* for (k = 0; k < orders.length; k++) {
+        if (evt.currentTarget.querySelector('.card-order__title').textContent === orders[k].name) {
           indexOrder = k;
         }
-      }
+      }*//*
+
+      index = findOrderIndex(evt.currentTarget, orders);
 
       if (orders.length === 1) {
         orders = [];
-        var v = parseInt(this.querySelector('.card-order__count').value, 10);
+        var v = parseInt(evt.currentTarget.querySelector('.card-order__count').value, 10);
         cards[btnId].amount += v;
-        orderList.removeChild(this);
+        orderList.removeChild(evt.currentTarget);
         showEmptyResults();
       } else {
-        orders.splice(indexOrder, 1); // удаляем из заказов текущий объект
-        cards[btnId].amount += parseInt(this.querySelector('.card-order__count').value, 10);
-        orderList.removeChild(this);
+        orders.splice(index, 1); // удаляем из заказов текущий объект
+        cards[btnId].amount += parseInt(evt.currentTarget.querySelector('.card-order__count').value, 10);
+        orderList.removeChild(evt.currentTarget);
         writeTotalResult(orders);
       }
-      setQuantityClass(findCard, cards[btnId].amount);
+      setQuantityClass(findCard, cards[btnId].amount);*/
+
+      setGoodsInCart(evt.currentTarget, 'delete');
     }
   });
   return orderElement;
@@ -432,6 +440,151 @@ var getOrder = function (card, id) {
     id: id
   };
   return order;
+};
+
+// определим порядковый номер (индекс) объекта order (который соответствует нашей дом-ноде) в массиве orders
+var findOrderIndex = function (x, array) {
+  for (var k = 0; k < array.length; k++) {
+    if (x.querySelector('.card-order__title').textContent === array[k].name) {
+      var ind = k;
+    }
+  }
+  return ind;
+};
+
+// определим есть ли товар, который мы хотим добавить, в корзине
+var findOrderInCart = function (x, array) {
+  var flag = 0;
+  var index = 0;
+  for (var j = 0; j < array.length; j++) {
+    if (x.name === array[j].name) {
+      flag = 1;
+      index = j;
+    }
+  }
+  var result = {
+    index: index,
+    flag: flag
+  };
+  return result;
+};
+
+var setGoodsInCart = function (e, type) {
+  var btnId = e.dataset.id;
+  var q = '[data-id="' + btnId + '"]'; // вспомогательная переменная для поиска покупки с заданным data-id
+  var flag = 0; // 0 - текущего товара нет в корзине, 1 - есть в корзине
+  var findCard = cardList.querySelector('.card' + q);
+
+  if (type === 'add') {
+    // console.log('add--');
+    findCard = Object.assign({}, cards[btnId]); // копируем карточку в findCard
+    var currentOrder = getOrder(findCard, btnId);
+  }
+
+  if (cards[btnId].amount > 0) {
+    if ((type === 'add') || (type === 'increase')) {
+      cards[btnId].amount -= 1; // уменьшаем на 1 кол-во товара в карточке каталога
+    }
+
+    if (type === 'add') {
+      setQuantityClass(e, cards[btnId].amount); // меняем класс текущей карточки каталога
+      addInCart(orders, currentOrder, flag, q);
+    }
+    if (type === 'increase') {
+      increaseInCart(orders, e);
+      setQuantityClass(findCard, cards[btnId].amount);
+    }
+  }
+
+  if (type === 'decrease') {
+    cards[btnId].amount += 1;
+  }
+
+  if (type === 'decrease') {
+    decreaseInCart(orders, e, orderList);
+    setQuantityClass(findCard, cards[btnId].amount); // меняем класс текущей карточки каталога
+  }
+
+  if (type === 'delete') {
+    deleteOrder(cards, orders, btnId, e, orderList);
+    setQuantityClass(findCard, cards[btnId].amount);
+  }
+};
+
+var deleteOrder = function (cardsArray, ordersArray, id, ev, orderL) {
+  var index = findOrderIndex(ev, orders);
+  if (ordersArray.length === 1) {
+    // ordersArray = [];
+    ordersArray.splice(0, 1);
+    var v = parseInt(ev.querySelector('.card-order__count').value, 10);
+    cardsArray[id].amount += v;
+    orderL.removeChild(ev);
+    showEmptyResults();
+  } else {
+    ordersArray.splice(index, 1); // удаляем из заказов текущий объект
+    cardsArray[id].amount += parseInt(ev.querySelector('.card-order__count').value, 10);
+    orderL.removeChild(ev);
+    writeTotalResult(ordersArray);
+  }
+};
+
+var decreaseInCart = function (ordersArray, ev, orderL) {
+  var index = findOrderIndex(ev, orders);
+  // console.log(ordersArray);
+  if (ordersArray[index].amount > 1) {
+    ordersArray[index].amount -= 1;
+    ev.querySelector('.card-order__count').value = ordersArray[index].amount;
+    writeTotalResult(ordersArray);
+    // console.log('больше 1 единицы товара');
+    // console.log(ordersArray);
+  } else {
+    if (ordersArray.length === 1) {
+      // console.log('В корзине 1 позиция');
+      /* ordersArray = [];*/
+      ordersArray.splice(0, 1);
+      orderL.removeChild(ev);
+      showEmptyResults();
+      // console.log(ordersArray);
+    } else {
+      ordersArray.splice(index, 1);
+      orderL.removeChild(ev);
+      writeTotalResult(ordersArray);
+      // console.log('В корзине несколько позиций');
+      // console.log(ordersArray);
+    }
+  }
+};
+
+var increaseInCart = function (ordersArray, ev) {
+  var index = findOrderIndex(ev, orders); // определим порядковый номер (индекс) объекта order (который соответствует нашей дом-ноде) в массиве ordersArray
+  ordersArray[index].amount += 1;
+  ev.querySelector('.card-order__count').value = ordersArray[index].amount;
+  writeTotalResult(ordersArray);
+};
+
+var addInCart = function (ordersArray, curOrder, flag, x) {
+  if (ordersArray.length === 0) {
+    curOrder.amount += 1;
+    ordersArray.push(curOrder);
+    orderList.appendChild(renderOrder(curOrder));
+  } else {
+    var currentResult = findOrderInCart(curOrder, ordersArray);
+    flag = currentResult.flag;
+    // console.log('flag = ' + flag);
+    var index = currentResult.index;
+    if (flag > 0) {
+      var findOrder = orderList.querySelector('.card-order' + x);
+      // console.log(findOrder);
+      orders[index].amount += 1;
+      findOrder.querySelector('.card-order__count').value = orders[index].amount;
+    } else {
+      curOrder.amount += 1;
+      ordersArray.push(curOrder);
+      orderList.appendChild(renderOrder(curOrder));
+    }
+  }
+  hideEmptyResults();
+  writeTotalResult(ordersArray);
 };
 
 // Первая фаза работы фильтра по цене
