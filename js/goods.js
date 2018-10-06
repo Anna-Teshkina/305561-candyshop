@@ -763,10 +763,8 @@ var toggleInfoTabActive = function () {
             setCourierDelivery();
             break;
         }
-        return false;
-      } else {
-        return false;
       }
+      return false;
     });
   }
 };
@@ -842,49 +840,60 @@ var checkCardDetails = function () {
     // console.log('paymentsInputs.length = ' + paymentsInputs.length);
     var t = paymentsInputs[k].name;
     // var cardInputCheck = [];
-    if (t === 'card-number') {
-      var cardNumber = paymentsInputs[k].value;
-      // console.log('cardNumber = ' + cardNumber);
-      if ((!checkCardNumber(cardNumber)) || (cardNumber === '')) {
-        cardInputCheck[0] = 0;
-      } else {
-        cardInputCheck[0] = 1;
-      }
-      // console.log('luna = ' + checkCardNumber(cardNumber));
-      // console.log('cardInputCheck[0] = ' + cardInputCheck[0]);
-    }
-    if (t === 'card-date') {
-      var cardDate = paymentsInputs[k].value;
-      // console.log('cardDate = ' + cardDate);
 
-      // if ((/[0-1]{1}[0-9]{1}\/[0-9]{2}/.test(cardDate)) && (cardDate !== '')) {
-      if (!checkCardDate(cardDate)) {
-        cardInputCheck[1] = 0;
-      } else {
-        cardInputCheck[1] = 1;
-      }
-      // console.log('cardDatecheck = ' + /[0-9]{2}/.test(cardDate));
-      // console.log('cardInputCheck[1] = ' + cardInputCheck[1]);
-    }
-    if (t === 'card-cvc') {
-      var cardCvc = paymentsInputs[k].value;
-      // console.log('cardCvc = ' + cardCvc);
-      if ((/[1-9]{1}[0-9]{2}/.test(cardCvc)) && (cardCvc !== '')) {
-        cardInputCheck[2] = 1;
-      } else {
-        cardInputCheck[2] = 0;
-      }
-      // console.log('cardInputCheck[2] = ' + cardInputCheck[2]);
-    }
-    if (t === 'cardholder') {
-      var cardHolder = paymentsInputs[k].value;
-      /* console.log('cardHolder = ' + cardHolder);*/
-      if (checkHolderName(cardHolder)) {
-        cardInputCheck[3] = 1;
-      } else {
-        cardInputCheck[3] = 0;
-      }
-      // console.log('cardInputCheck[3] = ' + cardInputCheck[3]);
+    switch (t) {
+      case 'card-number':
+        var cardNumber = paymentsInputs[k].value;
+        // console.log('cardNumber = ' + cardNumber);
+        if ((!checkCardNumber(cardNumber)) || (cardNumber === '')) {
+          cardInputCheck[0] = 0;
+          paymentsInputs[k].style.borderBottomColor = '#ff5722';
+        } else {
+          cardInputCheck[0] = 1;
+          paymentsInputs[k].style.borderBottomColor = '#e8e8e8';
+        }
+        // console.log('luna = ' + checkCardNumber(cardNumber));
+        // console.log('cardInputCheck[0] = ' + cardInputCheck[0]);
+        break;
+      case 'card-date':
+        var cardDate = paymentsInputs[k].value;
+        // console.log('cardDate = ' + cardDate);
+
+        // if ((/[0-1]{1}[0-9]{1}\/[0-9]{2}/.test(cardDate)) && (cardDate !== '')) {
+        if (!checkCardDate(cardDate)) {
+          cardInputCheck[1] = 0;
+          paymentsInputs[k].style.borderBottomColor = '#ff5722';
+        } else {
+          cardInputCheck[1] = 1;
+          paymentsInputs[k].style.borderBottomColor = '#e8e8e8';
+        }
+        // console.log('cardDatecheck = ' + /[0-9]{2}/.test(cardDate));
+        // console.log('cardInputCheck[1] = ' + cardInputCheck[1]);
+        break;
+      case 'card-cvc':
+        var cardCvc = paymentsInputs[k].value;
+        // console.log('cardCvc = ' + cardCvc);
+        if ((/[1-9]{1}[0-9]{2}/.test(cardCvc)) && (cardCvc !== '')) {
+          cardInputCheck[2] = 1;
+          paymentsInputs[k].style.borderBottomColor = '#e8e8e8';
+        } else {
+          cardInputCheck[2] = 0;
+          paymentsInputs[k].style.borderBottomColor = '#ff5722';
+        }
+        // console.log('cardInputCheck[2] = ' + cardInputCheck[2]);
+        break;
+      case 'cardholder':
+        var cardHolder = paymentsInputs[k].value;
+        /* console.log('cardHolder = ' + cardHolder);*/
+        if (checkHolderName(cardHolder)) {
+          cardInputCheck[3] = 1;
+          paymentsInputs[k].style.borderBottomColor = '#e8e8e8';
+        } else {
+          cardInputCheck[3] = 0;
+          paymentsInputs[k].style.borderBottomColor = '#ff5722';
+        }
+        // console.log('cardInputCheck[3] = ' + cardInputCheck[3]);
+        break;
     }
   }
   // console.log('cardInputCheck = ' + cardInputCheck);
@@ -903,30 +912,32 @@ var checkCardDetails = function () {
 };
 
 var checkHolderName = function (name) {
+  var flag = 1;
   if (name === '') {
-    return false;
+    flag = 0;
   }
   var nameA = name.split(' ');
   // console.log('nameA = ' + nameA);
   if (nameA.length !== 2) {
-    return false;
+    flag = 0;
   }
   for (var j = 0; j < 2; j++) {
     if (!/[A-Z]{1,}/.test(nameA[j])) {
-      return false;
+      flag = 0;
     }
   }
-  return true;
+  return flag;
 };
 
 var checkCardDate = function (date) {
+  var flag = 1;
   if (date === '') {
-    return false;
+    flag = 0;
   }
   var dateA = date.split('/');
   // console.log('dateA = ' + dateA);
   if (dateA.length !== 2) {
-    return false;
+    flag = 0;
   }
 
   var month = dateA[0];
@@ -936,12 +947,12 @@ var checkCardDate = function (date) {
   // console.log('year = ' + year);
 
   if (month > 12) {
-    return false;
+    flag = 0;
   }
 
   if (!/[0-9]{2}/.test(year)) {
-    return false;
+    flag = 0;
   }
-  return true;
+  return flag;
 };
 
