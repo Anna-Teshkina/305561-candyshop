@@ -873,7 +873,7 @@ var checkCardDetails = function () {
       case 'card-cvc':
         var cardCvc = paymentsInputs[k].value;
         // console.log('cardCvc = ' + cardCvc);
-        if ((/[1-9]{1}[0-9]{2}/.test(cardCvc)) && (cardCvc !== '')) {
+        if ((/[1-9]{1}[0-9]{2}/.test(cardCvc)) && (cardCvc !== '') && (cardCvc < 1000) && (cardCvc > 99)) {
           cardInputCheck[2] = 1;
           paymentsInputs[k].style.borderBottomColor = '#e8e8e8';
         } else {
@@ -946,11 +946,11 @@ var checkCardDate = function (date) {
   // console.log('month = ' + month);
   // console.log('year = ' + year);
 
-  if (month > 12) {
+  if ((month > 12) || (!/[0-9]{2}/.test(month)) || (/[A-Za-zА-Яа-я]/.test(month))) {
     flag = 0;
   }
 
-  if (!/[0-9]{2}/.test(year)) {
+  if ((!/[0-9]{2}/.test(year)) || (/[A-Za-zА-Яа-я]/.test(year)) || (year > 99)) {
     flag = 0;
   }
   return flag;
