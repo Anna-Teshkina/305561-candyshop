@@ -1,6 +1,6 @@
 'use strict';
 (function () {
-  /*фильтр по цене :: реализация перемещения ползунков фильтра*/
+  /* фильтр по цене :: реализация перемещения ползунков фильтра*/
   var rangeFilter = document.querySelector('.range__filter'); // блок фильтра
 
   rangeFilter.addEventListener('mousedown', function (evt) {

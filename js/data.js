@@ -25,7 +25,7 @@
   };
 
   var getCard = function (index) {
-  var card = {
+    var card = {
       name: window.util.getRandomElement(CARD_NAMES),
       picture: 'img/cards/' + window.util.getRandomElement(PIC_NAMES),
       amount: window.util.getRandomFromInterval(0, 20),
@@ -225,5 +225,5 @@
       return orderElement;
     }
 
-  }
+  };
 })();

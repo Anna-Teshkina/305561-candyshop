@@ -1,7 +1,7 @@
 'use strict';
 //  модуль, который отображает результаты покупки Клиента
 (function () {
-  window.results =  {
+  window.results = {
     // отобразить блоки результатов покупки
     showEmptyResults: function () {
       // если корзина пуста, то убираем соответствующие классы / скрываем блоки
@@ -69,5 +69,5 @@
       document.querySelector('.goods__total-count').innerHTML = 'Итого за ' + purchaseQuantity + purchaseWordQuantity + '<span class="goods__price">' + purchaseSum + ' ₽</span>';
       document.querySelector('.main-header__basket').innerHTML = 'Итого за ' + purchaseQuantity + purchaseWordQuantity + ' ' + purchaseSum + ' ₽';
     }
-  }
+  };
 })();

@@ -77,6 +77,23 @@
     }
   };
 
+  var setDisabledForm = function (inputsList, btnsList) {
+    for (i = 0; i < inputsList.length; i++) {
+      inputsList[i].setAttribute('disabled', 'disabled');
+    }
+
+    for (i = 0; i < btnsList.length; i++) {
+      btnsList[i].setAttribute('disabled', 'disabled');
+    }
+
+    document.querySelector('.deliver__textarea').setAttribute('disabled', 'disabled');
+
+    document.querySelector('.buy__submit-btn').setAttribute('disabled', 'disabled');
+
+    // console.log('Поля формы заблокированы');
+    toggleInfoTabActive();
+  }
+
   var toggleInfoTabActive = function () {
     var variantsAll = document.querySelectorAll('.toggle-btn__input');
 
@@ -105,6 +122,7 @@
 
   toggleChecked(paymentBlock);
   toggleChecked(deliverBlock);
+  setDisabledForm(formInputsList, formBtnsList);
 
   var disabledBankingPayment = function () {
     for (var i = 0; i < paymentsInputs.length; i++) {
@@ -292,9 +310,10 @@
   window.validation = {
     formInputsList: formInputsList,
     formBtnsList: formBtnsList,
+    setDisabledForm: setDisabledForm,
 
     setActiveForm: function (inputsList, btnsList) {
-      for (var i = 0; i < inputsList.length; i++) {
+      for (i = 0; i < inputsList.length; i++) {
         inputsList[i].removeAttribute('disabled', 'disabled');
       }
 
@@ -325,24 +344,5 @@
       toggleInfoTabActive();
     },
 
-    setDisabledForm: function (inputsList, btnsList) {
-      for (var i = 0; i < inputsList.length; i++) {
-        inputsList[i].setAttribute('disabled', 'disabled');
-      }
-
-      for (i = 0; i < btnsList.length; i++) {
-        btnsList[i].setAttribute('disabled', 'disabled');
-      }
-
-      document.querySelector('.deliver__textarea').setAttribute('disabled', 'disabled');
-
-      document.querySelector('.buy__submit-btn').setAttribute('disabled', 'disabled');
-
-      // console.log('Поля формы заблокированы');
-      toggleInfoTabActive();
-    }
-
-  }
-
-  window.validation.setDisabledForm(formInputsList, formBtnsList); // изначально корзина пуста - блокируем все поля ввода
+  };
 })();
