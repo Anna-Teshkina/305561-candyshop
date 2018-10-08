@@ -92,7 +92,7 @@
 
     // console.log('Поля формы заблокированы');
     toggleInfoTabActive();
-  }
+  };
 
   var toggleInfoTabActive = function () {
     var variantsAll = document.querySelectorAll('.toggle-btn__input');
