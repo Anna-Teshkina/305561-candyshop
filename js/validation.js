@@ -41,6 +41,56 @@
   var formInputsList = document.querySelectorAll('.text-input__input');
   var formBtnsList = document.querySelectorAll('.input-btn__input');
 
+  var setDisabledForm = function (inputsList, btnsList) {
+    for (i = 0; i < inputsList.length; i++) {
+      inputsList[i].setAttribute('disabled', 'disabled');
+    }
+
+    for (i = 0; i < btnsList.length; i++) {
+      btnsList[i].setAttribute('disabled', 'disabled');
+    }
+
+    document.querySelector('.deliver__textarea').setAttribute('disabled', 'disabled');
+
+    document.querySelector('.buy__submit-btn').setAttribute('disabled', 'disabled');
+
+    // console.log('Поля формы заблокированы');
+    toggleInfoTabActive();
+  };
+
+  var setActiveForm = function (inputsList, btnsList) {
+    for (i = 0; i < inputsList.length; i++) {
+      inputsList[i].removeAttribute('disabled', 'disabled');
+    }
+
+    for (i = 0; i < btnsList.length; i++) {
+      btnsList[i].removeAttribute('disabled', 'disabled');
+    }
+
+    document.querySelector('.buy__submit-btn').removeAttribute('disabled', 'disabled');
+
+    // если пользователь еще не добавил никакой товар в корзину, но уже
+    // поинтересовался какие данные ему нужно будет предоставить - нажимал
+    // на клавиши табов, в момент активации формы (корзина не пуста), надо
+    // сделать так, чтобы при активации формы активировались поля с активными табами,
+    // а с неактивными - деактивировались.
+    if (document.querySelector('#payment__card').hasAttribute('checked')) {
+      setBankingPayment();
+    }
+    if (document.querySelector('#payment__cash').hasAttribute('checked')) {
+      disabledBankingPayment();
+    }
+    if (document.querySelector('#deliver__store').hasAttribute('checked')) {
+      setStoreDelivery();
+    }
+    if (document.querySelector('#deliver__courier').hasAttribute('checked')) {
+      setCourierDelivery();
+    }
+
+    toggleInfoTabActive();
+  };
+
+
   var toggleChecked = function (block) {
     var variantsAll = block.querySelectorAll('.toggle-btn__input');
 
@@ -75,23 +125,6 @@
         }
       });
     }
-  };
-
-  var setDisabledForm = function (inputsList, btnsList) {
-    for (i = 0; i < inputsList.length; i++) {
-      inputsList[i].setAttribute('disabled', 'disabled');
-    }
-
-    for (i = 0; i < btnsList.length; i++) {
-      btnsList[i].setAttribute('disabled', 'disabled');
-    }
-
-    document.querySelector('.deliver__textarea').setAttribute('disabled', 'disabled');
-
-    document.querySelector('.buy__submit-btn').setAttribute('disabled', 'disabled');
-
-    // console.log('Поля формы заблокированы');
-    toggleInfoTabActive();
   };
 
   var toggleInfoTabActive = function () {
@@ -307,42 +340,60 @@
     return flag;
   };
 
+
+  /* ----------------------------------------------------------------*/
+  var form = document.querySelector('.form-order');
+
+  form.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.send(new FormData(form), onSend, onSendError);
+  });
+
+  var onSend = function () {
+    document.querySelector('.modal--success').classList.remove('modal--hidden');
+    // console.log('Форма успешно отправлена');
+    form.reset();
+
+    window.data.orders = [];
+
+    var cartElems = document.querySelectorAll('.goods_card');
+    // console.log(cartElems);
+
+    for (i = 0; i < cartElems.length; i++) {
+      var currElem = cartElems[i];
+      currElem.remove();
+    }
+
+    window.results.showEmptyResults();
+  };
+
+  var onSendError = function (errorMessage) {
+    var node = document.createElement('p');
+    node.classList.add('modal__message');
+    node.textContent = errorMessage;
+
+    var messageTitle = document.querySelector('.modal__title');
+    messageTitle.insertAdjacentElement('afterend', node);
+
+    document.querySelector('.modal--error').classList.remove('modal--hidden');
+  };
+
+  // закрытие модального окна
+  var modalAll = document.querySelectorAll('.modal');
+  // console.log(modalAll);
+
+  for (i = 0; i < modalAll.length; i++) {
+    modalAll[i].addEventListener('click', function (evt) {
+      evt.currentTarget.classList.add('modal--hidden');
+    });
+  }
+
+  /* -----------------------------------------------------------------*/
+
   window.validation = {
     formInputsList: formInputsList,
     formBtnsList: formBtnsList,
     setDisabledForm: setDisabledForm,
-
-    setActiveForm: function (inputsList, btnsList) {
-      for (i = 0; i < inputsList.length; i++) {
-        inputsList[i].removeAttribute('disabled', 'disabled');
-      }
-
-      for (i = 0; i < btnsList.length; i++) {
-        btnsList[i].removeAttribute('disabled', 'disabled');
-      }
-
-      document.querySelector('.buy__submit-btn').removeAttribute('disabled', 'disabled');
-
-      // если пользователь еще не добавил никакой товар в корзину, но уже
-      // поинтересовался какие данные ему нужно будет предоставить - нажимал
-      // на клавиши табов, в момент активации формы (корзина не пуста), надо
-      // сделать так, чтобы при активации формы активировались поля с активными табами,
-      // а с неактивными - деактивировались.
-      if (document.querySelector('#payment__card').hasAttribute('checked')) {
-        setBankingPayment();
-      }
-      if (document.querySelector('#payment__cash').hasAttribute('checked')) {
-        disabledBankingPayment();
-      }
-      if (document.querySelector('#deliver__store').hasAttribute('checked')) {
-        setStoreDelivery();
-      }
-      if (document.querySelector('#deliver__courier').hasAttribute('checked')) {
-        setCourierDelivery();
-      }
-
-      toggleInfoTabActive();
-    },
-
+    setActiveForm: setActiveForm,
   };
 })();

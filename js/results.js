@@ -34,36 +34,11 @@
     writeTotalResult: function (array) {
       var purchaseQuantity = 0;
       var purchaseSum = 0;
-      var purchaseWordQuantity = '';
 
       for (var k = 0; k < array.length; k++) {
         purchaseQuantity += array[k].amount;
         purchaseSum += array[k].amount * array[k].price;
-
-        // падеж отличается в зависимости от того, на какой символ заканчивается число
-        // смотрим остаток от деления на 10, учитывая исключения - 11, 12, 13, 14
-        switch (purchaseQuantity % 10) {
-          case 1:
-            purchaseWordQuantity = ' товар';
-            break;
-          case 0:
-          case 5:
-          case 6:
-          case 7:
-          case 8:
-          case 9:
-            purchaseWordQuantity = ' товаров';
-            break;
-          case 2:
-          case 3:
-          case 4:
-            purchaseWordQuantity = ' товара';
-            break;
-        }
-
-        if (purchaseQuantity >= 11 && purchaseQuantity <= 14) {
-          purchaseWordQuantity = ' товаров';
-        }
+        var purchaseWordQuantity = window.util.getNoun(purchaseQuantity, ' товар', ' товара', ' товаров');
       }
 
       document.querySelector('.goods__total-count').innerHTML = 'Итого за ' + purchaseQuantity + purchaseWordQuantity + '<span class="goods__price">' + purchaseSum + ' ₽</span>';
