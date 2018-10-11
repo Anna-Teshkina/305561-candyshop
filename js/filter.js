@@ -32,7 +32,7 @@
     var value = 0;
 
     var onMouseMove = function (moveEvt) {
-      sliderCoord(moveEvt, clientStartX);
+      sliderCoord(moveEvt, clientStartX, window.data.minPrice, window.data.maxPrice);
     };
 
     var onMouseUp = function (upEvt) {
@@ -40,11 +40,11 @@
       document.removeEventListener('mouseup', onMouseUp);
 
       if (upEvt.clientX === clientStartX) {
-        sliderCoord(upEvt, clientStartX);
+        sliderCoord(upEvt, clientStartX, window.data.minPrice, window.data.maxPrice);
       }
     };
 
-    var sliderCoord = function (e, startX) {
+    var sliderCoord = function (e, startX, minValue, maxValue) {
       var shiftX = e.clientX - startX; // смещение
 
       if (btnNumber === 1) {
@@ -76,12 +76,12 @@
       var percent = Math.round((value + btnCenterX) * 100 / parentWidth); // переводим в %
 
       if (btnNumber === 1) {
-        document.querySelector('.range__price--min').textContent = percent;
+        document.querySelector('.range__price--min').textContent = Math.round(percent / 100 * (maxValue - minValue) + minValue);
         activeLine.style.left = percent + '%';
       }
 
       if (btnNumber === 2) {
-        document.querySelector('.range__price--max').textContent = percent;
+        document.querySelector('.range__price--max').textContent = Math.round(percent / 100 * (maxValue - minValue) + minValue);
         activeLine.style.right = (100 - percent) + '%';
       }
     };
