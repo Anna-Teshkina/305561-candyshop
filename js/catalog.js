@@ -50,7 +50,7 @@
   };
 
   var deleteOrder = function (cardsArray, ordersArray, id, ev, orderL) {
-    var index = findOrderIndex(ev, window.data.orders);
+    var index = findOrderIndex(ev, window.render.orders);
     if (ordersArray.length === 1) {
       // ordersArray = [];
       ordersArray.splice(0, 1);
@@ -68,7 +68,7 @@
   };
 
   var decreaseInCart = function (ordersArray, ev, orderL) {
-    var index = findOrderIndex(ev, window.data.orders);
+    var index = findOrderIndex(ev, window.render.orders);
     // console.log(ordersArray);
     if (ordersArray[index].amount > 1) {
       ordersArray[index].amount -= 1;
@@ -96,7 +96,7 @@
   };
 
   var increaseInCart = function (ordersArray, ev) {
-    var index = findOrderIndex(ev, window.data.orders); // определим порядковый номер (индекс) объекта order (который соответствует нашей дом-ноде) в массиве ordersArray
+    var index = findOrderIndex(ev, window.render.orders); // определим порядковый номер (индекс) объекта order (который соответствует нашей дом-ноде) в массиве ordersArray
     ordersArray[index].amount += 1;
     ev.querySelector('.card-order__count').value = ordersArray[index].amount;
     window.results.writeTotalResult(ordersArray);
@@ -106,7 +106,7 @@
     if (ordersArray.length === 0) {
       curOrder.amount += 1;
       ordersArray.push(curOrder);
-      window.data.orderList.appendChild(window.data.renderOrder(curOrder));
+      window.render.orderList.appendChild(window.render.renderOrder(curOrder));
       window.validation.setActiveForm(window.validation.formInputsList, window.validation.formBtnsList); // активируем форму для отправки
     } else {
       var currentResult = findOrderInCart(curOrder, ordersArray);
@@ -114,14 +114,14 @@
       // console.log('flag = ' + flag);
       var index = currentResult.index;
       if (flag > 0) {
-        var findOrder = window.data.orderList.querySelector('.card-order' + x);
+        var findOrder = window.render.orderList.querySelector('.card-order' + x);
         // console.log(findOrder);
-        window.data.orders[index].amount += 1;
-        findOrder.querySelector('.card-order__count').value = window.data.orders[index].amount;
+        window.render.orders[index].amount += 1;
+        findOrder.querySelector('.card-order__count').value = window.render.orders[index].amount;
       } else {
         curOrder.amount += 1;
         ordersArray.push(curOrder);
-        window.data.orderList.appendChild(window.data.renderOrder(curOrder));
+        window.render.orderList.appendChild(window.render.renderOrder(curOrder));
       }
     }
     window.results.hideEmptyResults();
@@ -133,12 +133,12 @@
       var btnId = e.dataset.id;
       var q = '[data-id="' + btnId + '"]'; // вспомогательная переменная для поиска покупки с заданным data-id
       var flag = 0; // 0 - текущего товара нет в корзине, 1 - есть в корзине
-      var findCard = window.data.cardList.querySelector('.card' + q);
+      var findCard = window.render.cardList.querySelector('.card' + q);
 
       if (type === 'add') {
         // console.log('add--');
         findCard = Object.assign({}, window.data.cards[btnId]); // копируем карточку в findCard
-        var currentOrder = window.data.getOrder(findCard, btnId);
+        var currentOrder = window.render.getOrder(findCard, btnId);
       }
 
       if (window.data.cards[btnId].amount > 0) {
@@ -148,10 +148,10 @@
 
         if (type === 'add') {
           setQuantityClass(e, window.data.cards[btnId].amount); // меняем класс текущей карточки каталога
-          addInCart(window.data.orders, currentOrder, flag, q); // добавляем товар в корзину
+          addInCart(window.render.orders, currentOrder, flag, q); // добавляем товар в корзину
         }
         if (type === 'increase') {
-          increaseInCart(window.data.orders, e);
+          increaseInCart(window.render.orders, e);
           setQuantityClass(findCard, window.data.cards[btnId].amount);
         }
       }
@@ -161,12 +161,12 @@
       }
 
       if (type === 'decrease') {
-        decreaseInCart(window.data.orders, e, window.data.orderList);
+        decreaseInCart(window.render.orders, e, window.render.orderList);
         setQuantityClass(findCard, window.data.cards[btnId].amount); // меняем класс текущей карточки каталога
       }
 
       if (type === 'delete') {
-        deleteOrder(window.data.cards, window.data.orders, btnId, e, window.data.orderList);
+        deleteOrder(window.data.cards, window.render.orders, btnId, e, window.render.orderList);
         setQuantityClass(findCard, window.data.cards[btnId].amount);
       }
     }

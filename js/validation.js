@@ -30,6 +30,7 @@
   // 7.3 Если в корзине нет ни одного товара, форма оформления заказа блокируется
   // с помощью добавления атрибута disabled для всех полей или для блоков fieldset,
   // которые их содержат.
+  var form = document.querySelector('.form-order');
 
   var paymentBlock = document.querySelector('.payment');
   var deliverBlock = document.querySelector('.deliver');
@@ -38,8 +39,8 @@
   var deliveryRadioBtns = deliverBlock.querySelectorAll('.input-btn__input');
   var deliveryInputs = deliverBlock.querySelectorAll('.text-input__input');
 
-  var formInputsList = document.querySelectorAll('.text-input__input');
-  var formBtnsList = document.querySelectorAll('.input-btn__input');
+  var formInputsList = form.querySelectorAll('.text-input__input');
+  var formBtnsList = form.querySelectorAll('.input-btn__input');
 
   var setDisabledForm = function (inputsList, btnsList) {
     for (i = 0; i < inputsList.length; i++) {
@@ -91,17 +92,22 @@
   };
 
 
-  var toggleChecked = function (block) {
-    var variantsAll = block.querySelectorAll('.toggle-btn__input');
+  var toggleRadioChecked = function (block, variants) {
+    //var variantsAll = block.querySelectorAll('.toggle-btn__input');
 
-    for (var i = 0; i < variantsAll.length; i++) {
-      variantsAll[i].addEventListener('click', function (evt) {
-        for (var j = 0; j < variantsAll.length; j++) {
-          if (variantsAll[j].hasAttribute('checked')) {
-            variantsAll[j].removeAttribute('checked');
+    for (var i = 0; i < variants.length; i++) {
+      variants[i].addEventListener('click', function (evt) {
+        for (var j = 0; j < variants.length; j++) {
+          if (variants[j].hasAttribute('checked')) {
+            variants[j].removeAttribute('checked');
           }
         }
         evt.currentTarget.setAttribute('checked', 'checked');
+
+        if (block === 'metro') {
+          var picName = evt.currentTarget.getAttribute('value');
+          document.querySelector('.deliver__store-map-img').src = 'img/map/' + picName + '.jpg';
+        }
 
         // я подумала, что нужно оставить пользователю возможность
         // перемещаться по вкладкам, но при пустой корзине поля останутся заблокированными
@@ -122,17 +128,31 @@
             document.querySelector('.deliver__courier').classList.remove('visually-hidden');
             document.querySelector('.deliver__store').classList.add('visually-hidden');
             break;
+          default:
+            break;
         }
       });
     }
   };
+
+  /*var toggleCheckboxChecked = function (variants) {
+    for (var i = 0; i < variants.length; i++) {
+      variants[i].addEventListener('click', function (evt) {
+        if (evt.currentTarget.hasAttribute('checked')) {
+          evt.currentTarget.removeAttribute('checked');
+        } else {
+          evt.currentTarget.setAttribute('checked', 'checked');
+        }
+      });
+     }
+  }*/
 
   var toggleInfoTabActive = function () {
     var variantsAll = document.querySelectorAll('.toggle-btn__input');
 
     for (var i = 0; i < variantsAll.length; i++) {
       variantsAll[i].addEventListener('click', function (evt) {
-        if (window.data.orders.length !== 0) {
+        if (window.render.orders.length !== 0) {
           switch (evt.currentTarget.getAttribute('value')) {
             case 'card':
               setBankingPayment();
@@ -153,8 +173,8 @@
     }
   };
 
-  toggleChecked(paymentBlock);
-  toggleChecked(deliverBlock);
+  toggleRadioChecked(paymentBlock, paymentBlock.querySelectorAll('.toggle-btn__input'));
+  toggleRadioChecked(deliverBlock, deliverBlock.querySelectorAll('.toggle-btn__input'));
   setDisabledForm(formInputsList, formBtnsList);
 
   var disabledBankingPayment = function () {
@@ -192,8 +212,10 @@
 
   // 9.4 При переключении станции метро, изображение карты меняется на то, которое соответствует выбранной станции.
   var chooseMetro = function () {
-    var metroVariants = document.querySelectorAll('.input-btn__input');
-    for (var i = 0; i < metroVariants.length; i++) {
+    var metroVariants = form.querySelectorAll('.input-btn__input--radio');
+    toggleRadioChecked('metro', metroVariants);
+
+    /*for (var i = 0; i < metroVariants.length; i++) {
       metroVariants[i].addEventListener('click', function (evt) {
         for (var j = 0; j < metroVariants.length; j++) {
           if (metroVariants[j].hasAttribute('checked')) {
@@ -201,10 +223,11 @@
           }
         }
         evt.currentTarget.setAttribute('checked', 'checked');
+
         var picName = evt.currentTarget.getAttribute('value');
         document.querySelector('.deliver__store-map-img').src = 'img/map/' + picName + '.jpg';
       });
-    }
+    }*/
   };
 
   // 8.7 Рядом с номером карты отображается статус карты. Пока данные не введены
@@ -342,8 +365,6 @@
 
 
   /* ----------------------------------------------------------------*/
-  var form = document.querySelector('.form-order');
-
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
     window.backend.send(new FormData(form), onSend, onSendError);
@@ -354,7 +375,7 @@
     // console.log('Форма успешно отправлена');
     form.reset();
 
-    window.data.orders = [];
+    window.render.orders = [];
 
     var cartElems = document.querySelectorAll('.goods_card');
     // console.log(cartElems);
@@ -395,5 +416,6 @@
     formBtnsList: formBtnsList,
     setDisabledForm: setDisabledForm,
     setActiveForm: setActiveForm,
+    //toggleCheckboxChecked: toggleCheckboxChecked
   };
 })();
